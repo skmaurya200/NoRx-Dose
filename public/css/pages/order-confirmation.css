@@ -1,0 +1,337 @@
+/* NoRx Dose - order confirmation
+   The page a customer lands on after paying, and the only record of the order
+   they can reach without an account. Built to be readable and printable, not
+   decorative. */
+
+.oc {
+  padding: 46px 0 80px;
+}
+
+/* ---------------------------------------------------------------- header */
+
+.oc__head {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 34px;
+}
+
+.oc__tick {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--gold-soft);
+  color: var(--gold);
+  border: 1.5px solid var(--gold);
+}
+
+.oc__tick svg {
+  width: 26px;
+  height: 26px;
+}
+
+.oc__head h1 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
+  font-weight: 500;
+  margin: 0 0 10px;
+}
+
+.oc__head h1 em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.oc__head p {
+  font-size: .9rem;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+
+.oc__num {
+  font-size: .84rem !important;
+}
+
+.oc__num b {
+  color: var(--text);
+  letter-spacing: .05em;
+}
+
+.oc__keep {
+  font-size: .76rem !important;
+  margin-top: 12px !important;
+}
+
+/* ----------------------------------------------------------------- grid */
+
+.oc__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.oc__side {
+  display: grid;
+  gap: 18px;
+}
+
+.oc__card {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--paper);
+  padding: 22px;
+}
+
+.oc__card h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.02rem;
+  font-weight: 500;
+  margin: 0 0 16px;
+}
+
+.oc__card h2 svg {
+  width: 17px;
+  height: 17px;
+  color: var(--gold);
+}
+
+/* ---------------------------------------------------------------- lines */
+
+.oc__lines {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.oc__line {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.oc__media {
+  width: 46px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: var(--cream);
+  display: grid;
+  place-items: center;
+}
+
+.oc__media svg {
+  width: 30px;
+  height: 38px;
+}
+
+.oc__lt {
+  flex: 1;
+  min-width: 0;
+}
+
+.oc__lt b {
+  display: block;
+  font-size: .86rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.oc__lt span {
+  display: block;
+  font-size: .76rem;
+  color: var(--muted);
+}
+
+.oc__lp {
+  font-size: .88rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------- totals */
+
+.oc__rows {
+  margin: 16px 0 0;
+  display: grid;
+  gap: 9px;
+}
+
+.oc__rows > div {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: .85rem;
+}
+
+.oc__rows dt {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.oc__rows dd {
+  margin: 0;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* The discount is the one row worth colouring - it is the number a customer
+   checks for. */
+.oc__off dt {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  color: var(--gold) !important;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+.oc__off dt svg {
+  width: 13px;
+  height: 13px;
+  align-self: center;
+}
+
+.oc__off dt span {
+  color: var(--muted);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.oc__off dd {
+  color: var(--gold);
+}
+
+.oc__total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.oc__total b {
+  font-size: .92rem;
+}
+
+.oc__total strong {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+/* ----------------------------------------------------------------- side */
+
+.oc__card address {
+  font-style: normal;
+  font-size: .85rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.oc__card address b {
+  display: block;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.oc__card address span {
+  display: block;
+  margin-top: 8px;
+}
+
+.oc__p {
+  font-size: .87rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.oc__small {
+  font-size: .76rem;
+  color: var(--muted);
+  margin: 5px 0 0;
+}
+
+.oc__note {
+  font-size: .8rem;
+  color: var(--muted);
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+/* -------------------------------------------------------------- actions */
+
+.oc__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.oc__btn {
+  border-radius: var(--r-pill);
+  background: var(--gold);
+  color: #171307;
+  padding: 12px 30px;
+  font-size: .86rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .3s var(--ease);
+}
+
+.oc__btn:hover {
+  background: var(--gold-2);
+  color: #171307;
+}
+
+.oc__link {
+  font-size: .84rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.oc__link:hover {
+  color: var(--gold);
+}
+
+@media (max-width: 900px) {
+  .oc__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .oc__actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .oc__btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Printed as a receipt: drop the page chrome and the actions. */
+@media print {
+  .ticker,
+  header.site,
+  footer,
+  .oc__actions {
+    display: none !important;
+  }
+
+  .oc__card {
+    break-inside: avoid;
+  }
+}

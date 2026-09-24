@@ -1,0 +1,587 @@
+/* Storefront chat widget.
+
+   Sits on every page, so it inherits the shell's tokens (--gold, --ink,
+   --cream …) from common.css rather than redefining a palette of its own. The
+   fallbacks in each var() are there because this file is also correct on a
+   page that somehow loads it alone. */
+
+.talk {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1080;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.talk [hidden] { display: none !important; }
+.talk button, .talk input, .talk textarea { font: inherit; }
+.talk button { cursor: pointer; }
+.talk button:disabled { cursor: not-allowed; opacity: .5; }
+
+.talk button:focus-visible,
+.talk a:focus-visible,
+.talk input:focus-visible,
+.talk textarea:focus-visible {
+  outline: 3px solid var(--gold, #c9a227);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------- launcher */
+
+.talk__launcher {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  border: 1px solid rgba(232, 217, 168, .35);
+  border-radius: 999px;
+  padding: 13px 22px 13px 16px;
+  background: linear-gradient(135deg, #1e1c16, #14130f 60%);
+  color: var(--cream, #faf7f0);
+  box-shadow: 0 10px 30px rgba(20, 19, 15, .28);
+  font-weight: 600;
+  letter-spacing: .01em;
+  transition: transform .3s cubic-bezier(.22, .61, .36, 1), box-shadow .3s;
+}
+
+.talk__launcher:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 38px rgba(20, 19, 15, .34);
+}
+
+.talk__launcher-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  color: var(--gold-2, #e3c766);
+}
+
+.talk__launcher-icon svg { width: 20px; height: 20px; }
+
+/* Says "something arrived while you were not looking" without a number - the
+   widget is a conversation, not an inbox. */
+.talk__launcher-dot {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gold-2, #e3c766);
+  box-shadow: 0 0 0 3px rgba(20, 19, 15, .9);
+}
+
+/* ---------------------------------------------------------------- panel */
+
+.talk__panel {
+  position: absolute;
+  right: 0;
+  bottom: 74px;
+  width: min(420px, calc(100vw - 32px));
+  max-height: min(720px, calc(100dvh - 130px));
+  display: flex;
+  flex-direction: column;
+  background: var(--cream, #faf7f0);
+  border: 1px solid rgba(232, 217, 168, .8);
+  border-radius: 20px;
+  box-shadow: 0 28px 80px rgba(20, 19, 15, .26);
+  overflow: hidden;
+  animation: talk-rise .28s cubic-bezier(.22, .61, .36, 1);
+}
+
+@keyframes talk-rise {
+  from { opacity: 0; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .talk__panel { animation: none; }
+  .talk__launcher { transition: none; }
+}
+
+.talk__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 16px 16px 18px;
+  background: linear-gradient(135deg, #22201a, #14130f 70%);
+  color: var(--cream, #faf7f0);
+}
+
+.talk__avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(201, 162, 39, .16);
+  border: 1px solid rgba(227, 199, 102, .45);
+  color: var(--gold-2, #e3c766);
+  font-size: 17px;
+}
+
+.talk__titles { flex: 1; min-width: 0; }
+
+.talk__titles h2 {
+  font-size: 17px;
+  margin: 0;
+  letter-spacing: -.01em;
+}
+
+.talk__presence {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: rgba(250, 247, 240, .68);
+}
+
+.talk__pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6fbf8b;
+  flex-shrink: 0;
+}
+
+/* A person has taken over: the header says so rather than leaving the visitor
+   to guess who they are talking to. */
+.talk__presence.is-human .talk__pulse { background: var(--gold-2, #e3c766); }
+
+.talk__close {
+  border: 0;
+  background: rgba(250, 247, 240, .08);
+  color: inherit;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.talk__close svg { width: 17px; height: 17px; }
+.talk__close:hover { background: rgba(250, 247, 240, .16); }
+
+/* --------------------------------------------------------------- stream */
+
+.talk__scroll {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px;
+  min-height: 120px;
+  scrollbar-width: thin;
+}
+
+.talk__intro {
+  border: 1px solid rgba(232, 217, 168, .7);
+  background: #fff;
+  border-radius: 14px;
+  padding: 13px 14px;
+  margin-bottom: 16px;
+}
+
+.talk__intro-lead {
+  margin: 0 0 5px;
+  font-weight: 600;
+}
+
+.talk__intro-note {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--muted, #6e6a60);
+}
+
+.talk__message { margin: 0 0 15px; overflow-wrap: anywhere; }
+
+.talk__speaker {
+  display: block;
+  color: var(--muted, #6e6a60);
+  font-size: 10px;
+  margin: 0 4px 5px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-weight: 600;
+}
+
+.talk__bubble {
+  background: #fff;
+  border: 1px solid var(--line, #e7e2d6);
+  border-radius: 16px 16px 16px 4px;
+  padding: 12px 14px;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.talk__message--user { margin-left: 40px; }
+
+.talk__message--user .talk__speaker { text-align: right; }
+
+.talk__message--user .talk__bubble {
+  background: linear-gradient(135deg, #f7efd8, #f2e7c6);
+  border-color: rgba(232, 217, 168, .9);
+  border-radius: 16px 16px 4px 16px;
+}
+
+/* A reply typed by a member of staff is marked, so "is this a bot?" has a
+   visible answer. */
+.talk__message--manager .talk__bubble {
+  border-color: rgba(201, 162, 39, .55);
+  box-shadow: inset 3px 0 0 var(--gold, #c9a227);
+}
+
+.talk__message--system .talk__bubble {
+  background: transparent;
+  border-style: dashed;
+  color: var(--muted, #6e6a60);
+  font-size: 12.5px;
+  border-radius: 12px;
+}
+
+/* -------------------------------------------------------- product table */
+
+/* A table rather than cards: once there are five results, "which is cheapest"
+   is the question, and a column of prices answers it at a glance. It scrolls
+   sideways inside its own box so the panel itself never does. */
+.talk__results {
+  margin-top: 11px;
+  border: 1px solid var(--line, #e7e2d6);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.talk__table-wrap { overflow-x: auto; }
+
+.talk__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.talk__table th {
+  text-align: left;
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted, #6e6a60);
+  font-weight: 700;
+  padding: 9px 10px;
+  background: var(--cream-2, #f2eee3);
+  white-space: nowrap;
+}
+
+.talk__table td {
+  padding: 9px 10px;
+  border-top: 1px solid var(--line, #e7e2d6);
+  vertical-align: middle;
+}
+
+.talk__table tr:hover td { background: #fcfaf4; }
+
+.talk__cell-product {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 150px;
+}
+
+.talk__cell-product img {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 7px;
+  background: var(--cream, #faf7f0);
+}
+
+.talk__cell-name {
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.talk__cell-sub {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 400;
+  color: var(--muted, #6e6a60);
+}
+
+.talk__cell-price { white-space: nowrap; font-weight: 600; }
+
+.talk__cell-price del {
+  display: block;
+  font-weight: 400;
+  font-size: 10.5px;
+  color: var(--muted, #6e6a60);
+}
+
+.talk__cell-stock { font-size: 11px; color: var(--muted, #6e6a60); white-space: nowrap; }
+
+.talk__table a.talk__view {
+  display: inline-block;
+  white-space: nowrap;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--line, #e7e2d6);
+  color: var(--ink, #14130f);
+  text-decoration: none;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.talk__table a.talk__view:hover {
+  background: var(--gold-soft, #f7efd8);
+  border-color: var(--gold-line, #e8d9a8);
+}
+
+/* --------------------------------------------------------------- steps */
+
+/* How to do something, printed as a numbered list rather than a paragraph -
+   the visitor is going to follow it, not read it. */
+.talk__steps {
+  margin: 11px 0 0;
+  padding: 0 0 0 20px;
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+}
+
+.talk__steps li {
+  padding-left: 3px;
+}
+
+.talk__steps li::marker {
+  color: var(--gold, #c9a227);
+  font-weight: 700;
+}
+
+.talk__go {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--gold-line, #e8d9a8);
+  background: var(--gold-soft, #f7efd8);
+  color: var(--ink, #14130f);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.talk__go:hover { background: var(--gold-2, #e3c766); }
+
+/* Follow-ups offered under an answer, so it always ends somewhere. */
+.talk__followups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 11px;
+}
+
+.talk__followups button {
+  border: 1px solid var(--line, #e7e2d6);
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  color: var(--ink, #14130f);
+}
+
+.talk__followups button:hover {
+  background: var(--gold-soft, #f7efd8);
+  border-color: var(--gold-line, #e8d9a8);
+}
+
+/* ------------------------------------------------------------- controls */
+
+.talk__secondary {
+  border: 1px solid var(--gold-line, #e8d9a8);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink, #14130f);
+  padding: 8px 13px;
+  margin-top: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.talk__secondary:hover { background: var(--gold-soft, #f7efd8); }
+
+.talk__secondary--block { width: calc(100% - 32px); margin: 0 16px 10px; }
+
+.talk__typing {
+  display: flex;
+  gap: 5px;
+  padding: 11px 14px;
+  width: fit-content;
+  background: #fff;
+  border: 1px solid var(--line, #e7e2d6);
+  border-radius: 16px 16px 16px 4px;
+}
+
+.talk__typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold, #c9a227);
+  animation: talk-bounce 1.2s infinite ease-in-out;
+}
+
+.talk__typing span:nth-child(2) { animation-delay: .15s; }
+.talk__typing span:nth-child(3) { animation-delay: .3s; }
+
+@keyframes talk-bounce {
+  0%, 60%, 100% { opacity: .3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .talk__typing span { animation: none; opacity: .6; }
+}
+
+.talk__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 0 16px 12px;
+  flex-shrink: 0;
+}
+
+.talk__chips button {
+  border: 1px solid var(--gold-line, #e8d9a8);
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 13px;
+  font-size: 12px;
+  color: var(--ink, #14130f);
+}
+
+.talk__chips button:hover { background: var(--gold-soft, #f7efd8); }
+
+.talk__composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line, #e7e2d6);
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.talk__composer textarea {
+  min-width: 0;
+  flex: 1;
+  resize: none;
+  max-height: 120px;
+  border: 1px solid var(--line, #e7e2d6);
+  border-radius: 13px;
+  background: var(--cream, #faf7f0);
+  padding: 11px 13px;
+  line-height: 1.45;
+}
+
+.talk__composer button {
+  border: 0;
+  border-radius: 13px;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: var(--ink, #14130f);
+  color: var(--cream, #faf7f0);
+}
+
+.talk__composer button svg { width: 18px; height: 18px; }
+.talk__composer button:not(:disabled):hover { background: #2a271f; }
+
+.talk__error {
+  margin: 0;
+  padding: 9px 16px;
+  font-size: 12px;
+  color: #8c2d22;
+  background: #fff0eb;
+  flex-shrink: 0;
+}
+
+.talk__privacy {
+  margin: 0;
+  font-size: 10px;
+  color: var(--muted, #6e6a60);
+  padding: 0 16px 11px;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+/* The assistant waiting for a way to reach the visitor. Marked, not replaced
+   by a form: the reply is typed into the same box as everything else. */
+.talk__message--asking .talk__bubble {
+  border-color: var(--gold-line, #e8d9a8);
+  background: var(--gold-soft, #f7efd8);
+}
+
+/* --------------------------------------------------------- contact form */
+
+.talk__contact {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  background: #fff;
+  padding: 14px;
+  border: 1px solid var(--gold-line, #e8d9a8);
+  border-radius: 14px;
+}
+
+.talk__contact label { display: grid; gap: 4px; font-size: 12px; font-weight: 600; }
+
+.talk__contact input,
+.talk__contact textarea {
+  width: 100%;
+  border: 1px solid var(--line, #e7e2d6);
+  border-radius: 8px;
+  padding: 9px;
+  background: var(--cream, #faf7f0);
+  font-weight: 400;
+}
+
+.talk__contact p { font-size: 11px; color: var(--muted, #6e6a60); margin: 0; }
+
+.talk__contact button {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px;
+  background: var(--ink, #14130f);
+  color: var(--cream, #faf7f0);
+  font-weight: 600;
+}
+
+.talk__field-error { color: #8c2d22; font-size: 11px; font-weight: 400; }
+
+/* ------------------------------------------------------------- narrow */
+
+@media (max-width: 480px) {
+  .talk { right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); }
+
+  .talk__launcher-text { display: none; }
+  .talk__launcher { padding: 15px; }
+
+  .talk__panel {
+    bottom: 70px;
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 104px - env(safe-area-inset-bottom));
+  }
+
+  .talk__scroll { padding: 14px; }
+
+  /* 16px stops iOS zooming the page when a field takes focus. */
+  .talk__composer textarea,
+  .talk__contact input,
+  .talk__contact textarea { font-size: 16px; }
+}

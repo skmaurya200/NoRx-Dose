@@ -1,0 +1,489 @@
+/* Page styles: blogs - loaded after common.css */
+
+/* ---- hero ---- */
+.bhero {
+  background:var(--cream);
+  border-bottom:1px solid var(--line);
+  padding:62px 0 54px;
+  text-align:center;
+}
+.bhero h1 {
+  font-size:clamp(2rem,4.4vw,3.1rem);
+}
+.bhero h1 em {
+  font-style:italic;
+  color:var(--gold);
+}
+.bhero__sub {
+  color:var(--muted);
+  max-width:56ch;
+  margin:14px auto 0;
+}
+
+.blogs {
+  padding:44px 0 90px;
+}
+
+/* ---- filters ---- */
+.bfilter {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  flex-wrap:wrap;
+  margin-bottom:30px;
+}
+.chips {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.chip {
+  border:1px solid var(--line);
+  background:var(--paper);
+  border-radius:var(--r-pill);
+  padding:8px 16px;
+  font-size:.72rem;
+  font-weight:600;
+  color:var(--muted);
+  cursor:pointer;
+  transition:border-color .3s var(--ease),background .3s var(--ease),color .3s var(--ease);
+}
+.chip:hover {
+  border-color:var(--gold-line);
+  color:var(--text);
+}
+.chip.is-on {
+  background:var(--ink);
+  border-color:var(--ink);
+  color:#fff;
+}
+.bsearch {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  border:1px solid var(--line);
+  background:var(--paper);
+  border-radius:var(--r-pill);
+  padding:9px 16px;
+  min-width:230px;
+  transition:border-color .3s var(--ease);
+}
+.bsearch:focus-within {
+  border-color:var(--gold);
+}
+.bsearch svg {
+  stroke:var(--muted);
+  fill:none;
+  flex-shrink:0;
+}
+.bsearch input {
+  border:0;
+  background:none;
+  outline:none;
+  font-size:.8rem;
+  width:100%;
+  color:var(--text);
+}
+
+/* ---- featured post ---- */
+.feat {
+  display:grid;
+  grid-template-columns:1.15fr 1fr;
+  gap:0;
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  background:var(--paper);
+  margin-bottom:30px;
+}
+.feat__media {
+  display:block;
+  min-height:340px;
+}
+.feat__media .ph {
+  width:100%;
+  height:100%;
+}
+.feat__body {
+  padding:38px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+}
+.feat__body h2 {
+  font-size:clamp(1.35rem,2.4vw,1.85rem);
+  line-height:1.2;
+  margin-bottom:12px;
+}
+.feat__body h2 a {
+  transition:color .3s var(--ease);
+}
+.feat__body h2 a:hover {
+  color:var(--gold);
+}
+.feat__ex {
+  color:var(--muted);
+  font-size:.86rem;
+  line-height:1.6;
+  margin-bottom:16px;
+}
+.byline {
+  font-size:.72rem;
+  color:var(--muted);
+  margin-bottom:22px;
+}
+
+/* ---- shared post card look (the journal grid) ---- */
+.journal__grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+.post {
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--r-md);
+  overflow:hidden;
+  transition:transform .4s var(--ease),box-shadow .4s var(--ease);
+}
+.post:hover {
+  transform:translateY(-5px);
+  box-shadow:0 18px 36px rgba(20,19,15,.09);
+}
+.post__media {
+  display:block;
+  aspect-ratio:16/9;
+}
+.post__media .ph {
+  width:100%;
+  height:100%;
+}
+.post__body {
+  padding:18px;
+}
+.post__meta {
+  font-size:.58rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:10px;
+}
+.post h3 {
+  font-size:.95rem;
+  line-height:1.35;
+  margin-bottom:9px;
+}
+.post h3 a {
+  transition:color .3s var(--ease);
+}
+.post h3 a:hover {
+  color:var(--gold);
+}
+.post p {
+  font-size:.78rem;
+  color:var(--muted);
+  line-height:1.55;
+  margin-bottom:14px;
+}
+.post .byline {
+  font-size:.7rem;
+  margin-bottom:12px;
+}
+.post__more {
+  font-size:.72rem;
+  font-weight:600;
+  color:var(--text);
+  border-bottom:1px solid var(--gold);
+  padding-bottom:2px;
+}
+.post.is-out {
+  display:none;
+}
+
+.bempty {
+  text-align:center;
+  color:var(--muted);
+  font-size:.85rem;
+  padding:46px 0;
+}
+
+/* ---- buttons ---- */
+.btn-gold {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:0;
+  border-radius:var(--r-pill);
+  background:var(--gold);
+  color:#171307;
+  padding:12px 22px;
+  font-size:.76rem;
+  font-weight:600;
+  transition:background .3s var(--ease);
+}
+.btn-gold:hover {
+  background:var(--gold-2);
+}
+.btn-gold svg {
+  stroke:currentColor;
+  fill:none;
+}
+
+/* ---- newsletter ---- */
+.bnews {
+  margin-top:56px;
+  border-radius:var(--r-lg);
+  background:var(--ink);
+  color:rgba(255,255,255,.72);
+  padding:42px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:26px;
+}
+.bnews h2 {
+  color:#fff;
+  font-size:1.5rem;
+  margin-bottom:8px;
+}
+.bnews p {
+  font-size:.82rem;
+  max-width:46ch;
+}
+.bnews__form {
+  display:flex;
+  gap:8px;
+}
+.bnews__form input {
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.06);
+  border-radius:var(--r-pill);
+  padding:12px 18px;
+  color:#fff;
+  font-size:.8rem;
+  min-width:250px;
+  outline:none;
+  transition:border-color .3s var(--ease);
+}
+.bnews__form input::placeholder {
+  color:rgba(255,255,255,.45);
+}
+.bnews__form input:focus {
+  border-color:var(--gold);
+}
+.bnews__form button {
+  border:0;
+  border-radius:var(--r-pill);
+  background:var(--gold);
+  color:#171307;
+  padding:12px 24px;
+  font-size:.78rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .3s var(--ease);
+}
+.bnews__form button:hover {
+  background:var(--gold-2);
+}
+.bnews__ok {
+  grid-column:1/-1;
+  color:var(--gold-2);
+  font-size:.78rem;
+}
+.bnews__ok:empty {
+  display:none;
+}
+
+/* ============================================================
+   RESPONSIVE - widest breakpoint first, so narrower ones win
+   ============================================================ */
+@media (max-width:1100px) {
+  .journal__grid {
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+@media (max-width:900px) {
+  .feat {
+    grid-template-columns:1fr;
+  }
+  .feat__media {
+    min-height:0;
+    aspect-ratio:16/9;
+  }
+  .feat__body {
+    padding:26px;
+  }
+  .bnews {
+    grid-template-columns:1fr;
+    padding:30px;
+  }
+  .bnews__form {
+    flex-direction:column;
+  }
+  .bnews__form input {
+    min-width:0;
+  }
+}
+@media (max-width:640px) {
+  .journal__listing {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+  }
+  .journal__grid {
+    display:contents;
+  }
+  .feat {
+    display:block;
+    margin-bottom:0;
+    border-radius:var(--r-md);
+  }
+  .feat__media {
+    min-height:0;
+    aspect-ratio:16/9;
+  }
+  .feat__body {
+    display:block;
+    padding:12px;
+  }
+  .feat__body h2 {
+    font-size:.8rem;
+    line-height:1.35;
+    margin-bottom:7px;
+  }
+  .feat__ex {
+    display:-webkit-box;
+    overflow:hidden;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:3;
+    font-size:.7rem;
+    line-height:1.55;
+    margin-bottom:10px;
+  }
+  .feat .byline {
+    font-size:.62rem;
+    margin-bottom:9px;
+  }
+  .feat .btn-gold {
+    display:inline-flex;
+    padding:0 0 2px;
+    border:0;
+    border-bottom:1px solid var(--gold);
+    border-radius:0;
+    background:transparent;
+    color:var(--text);
+    font-size:.66rem;
+  }
+  .feat .btn-gold svg {
+    display:none;
+  }
+  .post__body {
+    padding:12px;
+  }
+  .post__meta {
+    font-size:.52rem;
+    letter-spacing:.1em;
+    margin-bottom:7px;
+  }
+  .post h3 {
+    font-size:.8rem;
+    margin-bottom:7px;
+  }
+  .post p {
+    display:-webkit-box;
+    overflow:hidden;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:3;
+    font-size:.7rem;
+    margin-bottom:10px;
+  }
+  .post .byline {
+    font-size:.62rem;
+    margin-bottom:9px;
+  }
+  .post__more {
+    font-size:.66rem;
+  }
+  .bsearch {
+    width:100%;
+  }
+}
+
+/* Keep every uploaded cover visible instead of trimming it to the card ratio. */
+.post__media img,
+.feat__media img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  background:var(--cream-2);
+}
+
+/* ---- server-side filtering ----
+   The chips are links now, so they need the anchor resets the <button>
+   version got for free. */
+.chip {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  text-decoration:none;
+  line-height:1.35;
+}
+.chip:hover {
+  text-decoration:none;
+}
+/* How many posts sit behind a chip, so an empty-looking filter is never a
+   surprise. */
+.chip__n {
+  font-size:.62rem;
+  font-weight:700;
+  padding:1px 6px;
+  border-radius:var(--r-pill);
+  background:var(--cream-2);
+  color:var(--muted);
+}
+.chip.is-on .chip__n {
+  background:rgba(255,255,255,.16);
+  color:#fff;
+}
+
+/* The line above the grid when a filter is on, with the way back out. */
+.bresult {
+  font-size:.78rem;
+  color:var(--muted);
+  margin:-14px 0 22px;
+}
+.bresult a {
+  color:var(--gold);
+  border-bottom:1px solid currentColor;
+}
+
+/* Pagination sits under the grid, centred. */
+.bpages {
+  display:flex;
+  justify-content:center;
+  margin-top:34px;
+}
+.bpages .pagination {
+  margin:0;
+  gap:6px;
+}
+.bpages .page-link {
+  border:1px solid var(--line);
+  border-radius:var(--r-sm);
+  color:var(--text);
+  font-size:.78rem;
+  padding:7px 13px;
+}
+.bpages .page-item.active .page-link {
+  background:var(--ink);
+  border-color:var(--ink);
+  color:#fff;
+}
+.bpages .page-item.disabled .page-link {
+  color:var(--muted);
+  opacity:.55;
+}

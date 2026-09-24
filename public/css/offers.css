@@ -1,0 +1,179 @@
+/* NoRx Dose - the one-tap offer list
+   Shared by the cart and the checkout summary, so a code looks and behaves the
+   same in both. Loaded after the page stylesheet; every colour comes from the
+   tokens common.css already defines. */
+
+.offers {
+  display: grid;
+  gap: 9px;
+  margin-bottom: 12px;
+}
+
+.offers__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.offers__head b {
+  font-size: .84rem;
+  font-weight: 600;
+}
+
+.offers__head span {
+  font-size: .72rem;
+  color: var(--muted, #7c7364);
+}
+
+/* One offer. A button, not a div: applying a discount is an action, and this
+   way it is reachable by keyboard and announced as pressable. */
+.offer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--paper);
+  padding: 12px 13px;
+  cursor: pointer;
+  transition: border-color .25s var(--ease), background .25s var(--ease), box-shadow .25s var(--ease);
+}
+
+.offer:hover:not(:disabled) {
+  border-color: var(--gold);
+}
+
+.offer:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Applied. The gold fill is the only strong colour in the summary column, so
+   it reads at a glance which code is on. */
+.offer.is-on {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, .12);
+}
+
+/* The basket has not reached the minimum yet. Deliberately still visible and
+   still readable - it tells the customer what to do to unlock it. */
+.offer.is-locked {
+  background: var(--cream);
+  cursor: not-allowed;
+}
+
+.offer.is-locked .offer__ic,
+.offer.is-locked .offer__t b {
+  opacity: .65;
+}
+
+.offer__ic {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: var(--gold-soft);
+  color: var(--gold);
+  display: grid;
+  place-items: center;
+}
+
+.offer.is-on .offer__ic {
+  background: var(--gold);
+  color: #171307;
+}
+
+.offer__ic svg {
+  width: 16px;
+  height: 16px;
+}
+
+.offer__t {
+  flex: 1;
+  min-width: 0;
+}
+
+.offer__t b {
+  display: block;
+  font-size: .84rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.offer__t span {
+  display: block;
+  font-size: .73rem;
+  color: var(--muted, #7c7364);
+  line-height: 1.4;
+}
+
+/* The code itself, set apart so it can still be read out or typed if someone
+   would rather do that. */
+.offer__code {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  background: var(--cream);
+  border: 1px solid var(--line);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  vertical-align: 1px;
+}
+
+.offer.is-on .offer__code {
+  background: var(--paper);
+  border-color: var(--gold);
+}
+
+.offer__act {
+  flex-shrink: 0;
+  border-radius: var(--r-pill);
+  background: var(--gold);
+  color: #171307;
+  padding: 7px 15px;
+  font-size: .74rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.offer.is-on .offer__act {
+  background: #171307;
+  color: var(--gold);
+}
+
+.offer.is-locked .offer__act {
+  background: transparent;
+  color: var(--muted, #7c7364);
+  padding-right: 4px;
+  font-weight: 500;
+}
+
+/* Nothing to offer: said plainly rather than leaving a gap where a promotion
+   used to be. */
+.offers__none {
+  border: 1px dashed var(--line);
+  border-radius: var(--r-md);
+  padding: 13px;
+  font-size: .78rem;
+  color: var(--muted, #7c7364);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 420px) {
+  .offer {
+    flex-wrap: wrap;
+  }
+
+  .offer__act {
+    width: 100%;
+    text-align: center;
+  }
+}

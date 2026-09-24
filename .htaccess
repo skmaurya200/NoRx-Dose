@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Remove /public from browser URL
+    RewriteCond %{THE_REQUEST} \s/+public(?:/([^\s?]*))? [NC]
+    RewriteRule ^public(?:/(.*))?$ /$1 [R=301,L,NE]
+
+    # Internally serve Laravel from public directory
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

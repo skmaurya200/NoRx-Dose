@@ -1,0 +1,1334 @@
+/* NoRx Dose - manager catalogue screens
+   Categories, products and product details. Loaded on top of admin.css, whose
+   design tokens (--gold, --cream, --border, ...) this file reuses throughout. */
+
+/* ==========================================================================
+   Toasts - bottom right, above everything, out of the way of the content
+   ========================================================================== */
+.toast-stack{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  z-index:2000;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  width:min(360px, calc(100vw - 32px));
+  /* The stack spans a column of empty space most of the time, so it must not
+     swallow clicks meant for the page underneath. Each toast re-enables them. */
+  pointer-events:none;
+}
+.toast-msg{
+  pointer-events:auto;
+  display:flex;
+  align-items:flex-start;
+  gap:11px;
+  padding:13px 14px;
+  border-radius:12px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:4px solid var(--text-muted);
+  box-shadow:0 14px 34px rgba(20,15,5,.16);
+  font-size:13.5px;
+  line-height:1.45;
+  animation:toast-in .28s cubic-bezier(.22,1,.36,1);
+}
+.toast-msg.is-leaving{ animation:toast-out .22s ease forwards; }
+.toast-msg .t-icon{ font-size:16px; line-height:1.2; flex-shrink:0; }
+.toast-msg .t-body{ flex:1; min-width:0; }
+.toast-msg .t-title{ font-weight:600; margin-bottom:1px; }
+.toast-msg .t-text{ color:var(--text-muted); word-wrap:break-word; }
+.toast-msg .t-close{
+  border:none; background:none; padding:0; line-height:1;
+  color:var(--text-muted-2); font-size:15px; flex-shrink:0;
+}
+.toast-msg .t-close:hover{ color:var(--text-dark); }
+
+.toast-msg--success{ border-left-color:var(--up); }
+.toast-msg--success .t-icon{ color:var(--up); }
+.toast-msg--error{ border-left-color:var(--down); }
+.toast-msg--error .t-icon{ color:var(--down); }
+.toast-msg--info{ border-left-color:var(--gold); }
+.toast-msg--info .t-icon{ color:var(--gold); }
+
+@keyframes toast-in{
+  from{ opacity:0; transform:translateY(14px) scale(.97); }
+  to  { opacity:1; transform:none; }
+}
+@keyframes toast-out{
+  to{ opacity:0; transform:translateX(20px); }
+}
+@media (prefers-reduced-motion: reduce){
+  .toast-msg, .toast-msg.is-leaving{ animation:none; }
+}
+@media (max-width: 575.5px){
+  /* Full width at the bottom on a phone: a 360px card floating in the corner
+     of a 375px screen just looks like a mistake. */
+  .toast-stack{ right:12px; left:12px; bottom:12px; width:auto; }
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+.form-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:22px;
+  margin-bottom:20px;
+}
+.form-card + .form-card{ margin-top:0; }
+.form-card-title{
+  font-family:'Playfair Display',serif;
+  font-size:16px;
+  font-weight:700;
+  margin:0 0 3px;
+}
+.form-card-sub{ font-size:12px; color:var(--text-muted); margin-bottom:18px; }
+/* Only when there is no sub-line to provide the gap itself. */
+.form-card-title + .field,
+.form-card-title + .switch-row,
+.form-card-title + .row{ margin-top:16px; }
+
+.field{ margin-bottom:16px; }
+.field-label{
+  display:block;
+  font-size:12.5px;
+  font-weight:600;
+  margin-bottom:6px;
+  color:var(--text-dark);
+}
+.field-label .req{ color:var(--down); margin-left:2px; }
+/* The counterpart to .req: says a field may be left blank, so the operator
+   does not stop to look for a value that is not needed. */
+.field-label .field-opt{
+  margin-left:6px;
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+}
+.field-hint{ font-size:11.5px; color:var(--text-muted); margin-top:5px; }
+
+.field-input,
+.field-select,
+.field-textarea{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 13px;
+  font-size:13.5px;
+  font-family:inherit;
+  color:var(--text-dark);
+  background:var(--surface);
+  transition:border-color .18s, box-shadow .18s;
+}
+.field-textarea{ min-height:110px; resize:vertical; line-height:1.55; }
+.field-select{
+  /* Native arrow is hidden so the control matches the text inputs. */
+  appearance:none;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%238a7d67'%3E%3Cpath d='M4.5 6.5 8 10l3.5-3.5z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 11px center;
+  background-size:16px;
+  padding-right:34px;
+}
+.field-input:focus,
+.field-select:focus,
+.field-textarea:focus{
+  outline:none;
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(201,161,46,.16);
+}
+.field-input:disabled,
+.field-input[readonly]{ background:var(--cream); color:var(--text-muted); }
+
+/* --- the error state: small, red, directly under its input --- */
+.field-input.is-invalid,
+.field-select.is-invalid,
+.field-textarea.is-invalid{
+  border-color:var(--down);
+  /* Colour alone is not an accessible signal, so the ring reinforces it. */
+  box-shadow:0 0 0 3px rgba(177,80,63,.12);
+}
+.field-error{
+  display:none;
+  font-size:11.5px;
+  color:var(--down);
+  margin:5px 0 0;
+  line-height:1.4;
+}
+.field-error.is-shown{ display:flex; align-items:flex-start; gap:5px; }
+.field-error.is-shown::before{
+  content:"\F33A";              /* bi-exclamation-circle-fill */
+  font-family:'bootstrap-icons';
+  font-size:11px;
+  line-height:1.3;
+  flex-shrink:0;
+}
+
+/* Prefix for money inputs, so the currency is part of the control */
+.input-prefixed{ position:relative; }
+.input-prefixed .prefix{
+  position:absolute;
+  left:13px; top:50%;
+  transform:translateY(-50%);
+  font-size:13px;
+  color:var(--text-muted);
+  pointer-events:none;
+}
+.input-prefixed .field-input{ padding-left:36px; }
+
+/* Switches */
+.switch-row{
+  display:flex;
+  align-items:flex-start;
+  gap:11px;
+  padding:11px 0;
+  border-bottom:1px dashed var(--border);
+}
+.switch-row:last-child{ border-bottom:none; }
+.switch-row .sr-text{ flex:1; min-width:0; }
+.switch-row .sr-title{ font-size:13px; font-weight:600; }
+.switch-row .sr-sub{ font-size:11.5px; color:var(--text-muted); }
+.switch{
+  position:relative;
+  width:42px; height:24px;
+  flex-shrink:0;
+  appearance:none;
+  background:var(--border);
+  border-radius:30px;
+  transition:background .2s;
+  cursor:pointer;
+}
+.switch::after{
+  content:"";
+  position:absolute;
+  top:3px; left:3px;
+  width:18px; height:18px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.25);
+  transition:transform .2s;
+}
+.switch:checked{ background:var(--gold); }
+.switch:checked::after{ transform:translateX(18px); }
+.switch:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+/* ==========================================================================
+   Image pickers
+   ========================================================================== */
+.image-picker{
+  border:1.5px dashed var(--border);
+  border-radius:var(--radius-md);
+  padding:18px;
+  text-align:center;
+  background:var(--cream);
+  transition:border-color .18s, background .18s;
+}
+.image-picker.is-dragging{ border-color:var(--gold); background:rgba(201,161,46,.07); }
+.image-picker .ip-icon{ font-size:26px; color:var(--gold); }
+.image-picker .ip-text{ font-size:12.5px; color:var(--text-muted); margin-top:6px; }
+.image-picker .ip-text b{ color:var(--text-dark); }
+.image-picker input[type="file"]{ display:none; }
+
+.image-preview{
+  position:relative;
+  width:100%;
+  max-width:220px;
+  margin:0 auto 12px;
+  border-radius:var(--radius-md);
+  overflow:hidden;
+  border:1px solid var(--border);
+  background:var(--surface);
+  aspect-ratio:1 / 1;
+}
+.image-preview img{ width:100%; height:100%; object-fit:cover; display:block; }
+.image-preview .ip-remove{
+  position:absolute; top:7px; right:7px;
+  width:26px; height:26px;
+  border:none; border-radius:50%;
+  background:rgba(20,15,5,.72);
+  color:#fff; font-size:12px;
+  display:flex; align-items:center; justify-content:center;
+}
+.image-preview .ip-remove:hover{ background:var(--down); }
+
+/* Gallery grid */
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));
+  gap:12px;
+}
+.gallery-item{
+  position:relative;
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  overflow:hidden;
+  background:var(--surface);
+  aspect-ratio:1 / 1;
+}
+.gallery-item img{ width:100%; height:100%; object-fit:cover; display:block; }
+.gallery-item.is-primary{ border-color:var(--gold); box-shadow:0 0 0 2px rgba(201,161,46,.25); }
+.gallery-item .gi-badge{
+  position:absolute; top:7px; left:7px;
+  background:var(--gold); color:#1a1305;
+  font-size:10px; font-weight:700;
+  padding:3px 7px; border-radius:20px;
+  letter-spacing:.03em;
+}
+.gallery-item .gi-actions{
+  position:absolute; inset:auto 0 0 0;
+  display:flex; gap:6px;
+  padding:7px;
+  background:linear-gradient(to top, rgba(20,15,5,.82), transparent);
+  /* Always visible on touch, where there is no hover to reveal them. */
+  opacity:1;
+}
+@media (hover: hover){
+  .gallery-item .gi-actions{ opacity:0; transition:opacity .18s; }
+  .gallery-item:hover .gi-actions,
+  .gallery-item:focus-within .gi-actions{ opacity:1; }
+}
+.gallery-item .gi-btn{
+  flex:1;
+  border:none;
+  border-radius:7px;
+  padding:5px;
+  font-size:12px;
+  background:rgba(255,255,255,.9);
+  color:var(--text-dark);
+}
+.gallery-item .gi-btn:hover{ background:#fff; }
+.gallery-item .gi-btn--danger:hover{ background:var(--down); color:#fff; }
+
+/* ==========================================================================
+   Specification repeater
+   ========================================================================== */
+.spec-row{
+  display:grid;
+  grid-template-columns:1fr 1.4fr auto;
+  gap:9px;
+  margin-bottom:9px;
+  align-items:start;
+}
+@media (max-width: 575.5px){
+  /* Three columns at 360px leaves each field about 90px wide - unusable. */
+  .spec-row{ grid-template-columns:1fr auto; }
+  .spec-row .spec-label{ grid-column:1 / -1; }
+}
+.spec-remove{
+  border:1px solid var(--border);
+  background:var(--surface);
+  border-radius:9px;
+  width:38px; height:38px;
+  color:var(--text-muted);
+  flex-shrink:0;
+}
+.spec-remove:hover{ border-color:var(--down); color:var(--down); }
+
+/* ==========================================================================
+   Detail section repeater
+   ========================================================================== */
+
+/* A heading and the text under it, which is a different shape from a
+   specification row - the body needs the full width to be worth typing into. */
+.section-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:9px;
+  margin-bottom:14px;
+  padding-bottom:14px;
+  border-bottom:1px dashed var(--border);
+  align-items:start;
+}
+.section-row:last-child{ border-bottom:0; padding-bottom:0; margin-bottom:0; }
+.section-row__body{ grid-column:1 / -1; }
+
+/* With an icon the row is icon + heading + remove. */
+.section-row--iconed{ grid-template-columns:74px 1fr auto; }
+.section-row__icon{ text-align:center; font-size:16px; }
+/* A section is a paragraph or two, so its editor does not need a post's height. */
+.section-row .ed-area{ min-height:130px; }
+.section-row .ed-source{ min-height:130px; }
+.section-row__remove{
+  border:1px solid var(--border);
+  background:var(--surface);
+  border-radius:9px;
+  width:38px; height:38px;
+  color:var(--text-muted);
+  flex-shrink:0;
+}
+.section-row__remove:hover{ border-color:var(--down); color:var(--down); }
+
+/* ==========================================================================
+   Page header + filters
+   ========================================================================== */
+.page-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+.page-head h1{
+  font-family:'Playfair Display',serif;
+  font-size:24px;
+  margin:0 0 3px;
+}
+.page-head .ph-sub{ font-size:13px; color:var(--text-muted); margin:0; }
+.page-head .ph-actions{ display:flex; gap:9px; flex-wrap:wrap; }
+
+.btn-ghost{
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text-dark);
+  border-radius:30px;
+  padding:10px 20px;
+  font-size:13.5px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+.btn-ghost:hover{ border-color:var(--gold); color:var(--text-dark); }
+.btn-danger-soft{
+  border:1px solid #f0d5d0;
+  background:#fdf6f4;
+  color:var(--down);
+  border-radius:30px;
+  padding:10px 20px;
+  font-size:13.5px;
+}
+.btn-danger-soft:hover{ background:var(--down); color:#fff; border-color:var(--down); }
+
+.filter-bar{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:14px;
+  margin-bottom:18px;
+  /* Flex, not grid: the categories bar has three filters and the products bar
+     four, and flex-wrap adapts to either without a bespoke template. */
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  gap:10px;
+}
+.filter-bar .field{ margin-bottom:0; flex:1 1 150px; min-width:0; }
+.filter-bar .fb-search{ flex:2 1 240px; }
+.filter-bar .fb-actions{ display:flex; gap:8px; flex:0 0 auto; }
+
+@media (max-width: 767.5px){
+  /* Stacking beats squeezing: four controls across a phone are unreadable. */
+  .filter-bar .fb-search{ flex:1 1 100%; }
+  .filter-bar .field{ flex:1 1 calc(50% - 5px); }
+  .filter-bar .fb-actions{ flex:1 1 100%; }
+  .filter-bar .fb-actions > *{ flex:1; }
+}
+
+/* ==========================================================================
+   Data table -> cards on small screens
+   ========================================================================== */
+.table-wrap{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  overflow:hidden;
+}
+.data-table{ width:100%; margin:0; font-size:13px; border-collapse:collapse; }
+.data-table thead th{
+  background:var(--cream);
+  color:var(--text-muted);
+  font-weight:600;
+  font-size:11px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  padding:12px 14px;
+  text-align:left;
+  white-space:nowrap;
+  border-bottom:1px solid var(--border);
+}
+.data-table thead th a{ color:inherit; display:inline-flex; align-items:center; gap:4px; }
+.data-table thead th a:hover{ color:var(--gold); }
+.data-table tbody td{
+  padding:13px 14px;
+  border-bottom:1px solid var(--border);
+  vertical-align:middle;
+}
+.data-table tbody tr:last-child td{ border-bottom:none; }
+.data-table tbody tr:hover{ background:#fdfbf6; }
+.data-table .num{ text-align:right; white-space:nowrap; }
+.data-table .actions{ text-align:right; white-space:nowrap; }
+
+.cell-media{ display:flex; align-items:center; gap:11px; min-width:0; }
+.cell-thumb{
+  width:42px; height:42px;
+  border-radius:10px;
+  object-fit:cover;
+  flex-shrink:0;
+  background:var(--cream);
+  border:1px solid var(--border);
+}
+.cell-thumb--empty{
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text-muted-2); font-size:16px;
+}
+.cell-title{ font-weight:600; color:var(--text-dark); display:block; }
+a.cell-title:hover{ color:var(--gold); }
+.cell-meta{ font-size:11.5px; color:var(--text-muted); }
+
+.row-btn{
+  border:1px solid var(--border);
+  background:var(--surface);
+  border-radius:8px;
+  width:32px; height:32px;
+  color:var(--text-muted);
+  font-size:13px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.row-btn:hover{ border-color:var(--gold); color:var(--gold); }
+.row-btn--danger:hover{ border-color:var(--down); color:var(--down); }
+.row-btn[disabled]{ opacity:.45; pointer-events:none; }
+
+.badge-draft{ background:#efeae0; color:#7a6c52; }
+.badge-active{ background:#e7f1e6; color:var(--up); }
+.badge-archived{ background:#eceff2; color:#6b7885; }
+.badge-muted{ background:var(--cream); color:var(--text-muted); }
+.badge-warn{ background:var(--gold-soft); color:#93731c; }
+.badge-danger{ background:#f7e6e3; color:var(--down); }
+/* In transit: distinct from "done" green and from "needs attention" gold. */
+.badge-info{ background:#e6edf7; color:#3d6aa8; }
+
+/* The list stat cards double as filter links, so they must not pick up the
+   browser's default link colour. */
+a.stat-card{ color:inherit; transition:border-color .18s, box-shadow .18s; }
+a.stat-card:hover{ border-color:var(--gold); box-shadow:0 6px 18px rgba(201,161,46,.12); }
+
+.empty-state{ padding:52px 20px; text-align:center; }
+.empty-state .es-icon{ font-size:34px; color:var(--gold); opacity:.5; }
+.empty-state h3{ font-family:'Playfair Display',serif; font-size:18px; margin:12px 0 5px; }
+.empty-state p{ font-size:13px; color:var(--text-muted); margin:0 auto 16px; max-width:380px; }
+
+.table-foot{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:14px 16px;
+  border-top:1px solid var(--border);
+  font-size:12.5px;
+  color:var(--text-muted);
+}
+.table-foot .pagination{ margin:0; }
+.table-foot .page-link{
+  color:var(--text-dark);
+  border-color:var(--border);
+  font-size:13px;
+  padding:5px 11px;
+}
+.table-foot .page-item.active .page-link{
+  background:var(--bg-dark);
+  border-color:var(--bg-dark);
+  color:var(--gold-light);
+}
+.table-foot .page-item.disabled .page-link{ color:var(--text-muted-2); }
+
+@media (max-width: 767.5px){
+  /* Each row becomes a card. Headers are hidden and re-attached per cell with
+     the data-label attribute, so the table stays a table for screen readers. */
+  .data-table thead{ display:none; }
+  .data-table, .data-table tbody, .data-table tr, .data-table td{ display:block; width:100%; }
+  .data-table tr{
+    border-bottom:1px solid var(--border);
+    padding:14px;
+  }
+  .data-table tr:last-child{ border-bottom:none; }
+  .data-table tbody td{
+    border:none;
+    padding:5px 0;
+    display:flex;
+    align-items:center;
+    /* Not space-between: a cell holding two or three things (price + discount,
+       stock + badge, three action buttons) would spread them across the whole
+       row. The label takes the free space instead, so everything after it
+       stays grouped on the right. */
+    justify-content:flex-start;
+    gap:8px;
+    text-align:right;
+    flex-wrap:wrap;
+  }
+  .data-table tbody td::before{
+    content:attr(data-label);
+    font-size:11px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    font-weight:600;
+    text-align:left;
+    flex-shrink:0;
+    margin-right:auto;
+  }
+  /* The lead cell is the card's heading: no label, full width. */
+  .data-table tbody td.cell-primary{ display:block; text-align:left; padding-bottom:10px; }
+  .data-table tbody td.cell-primary::before{ display:none; }
+  .data-table .num, .data-table .actions{ text-align:right; }
+  .data-table .actions{ padding-top:11px; }
+}
+
+/* ==========================================================================
+   Tabs on the product form
+   ========================================================================== */
+.form-tabs{
+  display:flex;
+  gap:4px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:20px;
+  overflow-x:auto;
+  /* Momentum scrolling on a phone, and the scrollbar hidden so the strip does
+     not shift the layout when it appears. */
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.form-tabs::-webkit-scrollbar{ display:none; }
+.form-tab{
+  border:none;
+  background:none;
+  padding:11px 16px;
+  font-size:13.5px;
+  font-weight:500;
+  color:var(--text-muted);
+  white-space:nowrap;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+.form-tab:hover{ color:var(--text-dark); }
+.form-tab.active{ color:var(--text-dark); border-bottom-color:var(--gold); font-weight:600; }
+/* Set by the form script when a pane holds an invalid field, so an error on a
+   hidden tab is never silently missed. */
+.form-tab .tab-dot{
+  width:7px; height:7px;
+  border-radius:50%;
+  background:var(--down);
+  display:none;
+}
+.form-tab.has-errors .tab-dot{ display:inline-block; }
+
+.tab-pane-custom{ display:none; }
+.tab-pane-custom.active{ display:block; }
+
+.form-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  padding-top:4px;
+}
+@media (max-width: 575.5px){
+  /* Full-width, primary last: the thumb sits nearest the main action. */
+  .form-actions{ flex-direction:column-reverse; }
+  .form-actions > *{ width:100%; text-align:center; }
+}
+
+/* Busy state shared by every submit button on these screens */
+.btn-gold .spinner,
+.btn-ghost .spinner{
+  display:none;
+  width:14px; height:14px;
+  border:2px solid rgba(26,19,5,.25);
+  border-top-color:#1a1305;
+  border-radius:50%;
+  margin-right:7px;
+  vertical-align:-2px;
+  animation:btn-spin .6s linear infinite;
+}
+.is-busy .spinner{ display:inline-block; }
+.is-busy{ opacity:.75; pointer-events:none; }
+@keyframes btn-spin{ to{ transform:rotate(360deg); } }
+
+/* ==========================================================================
+   Product details screen
+   ========================================================================== */
+.detail-grid{
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) 320px;
+  gap:20px;
+  align-items:start;
+}
+@media (max-width: 991.5px){
+  .detail-grid{ grid-template-columns:1fr; }
+}
+.kv-list{ margin:0; }
+.kv-row{
+  display:flex;
+  gap:14px;
+  justify-content:space-between;
+  padding:9px 0;
+  border-bottom:1px dashed var(--border);
+  font-size:13px;
+}
+.kv-row:last-child{ border-bottom:none; }
+.kv-row dt{ color:var(--text-muted); font-weight:500; flex-shrink:0; }
+.kv-row dd{ margin:0; text-align:right; font-weight:500; word-break:break-word; }
+
+.prose-block{ font-size:13.5px; line-height:1.65; color:var(--text-dark); }
+.prose-block p{ margin-bottom:10px; }
+.prose-block:last-child{ margin-bottom:0; }
+
+.price-display{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.price-display .pd-now{
+  font-family:'Playfair Display',serif;
+  font-size:28px;
+  font-weight:700;
+}
+.price-display .pd-was{ font-size:15px; color:var(--text-muted); text-decoration:line-through; }
+.price-display .pd-off{
+  background:var(--gold-soft);
+  color:#93731c;
+  font-size:11.5px;
+  font-weight:700;
+  padding:3px 9px;
+  border-radius:20px;
+}
+
+.stock-meter{ height:6px; border-radius:10px; background:var(--border); overflow:hidden; margin-top:9px; }
+.stock-meter span{ display:block; height:100%; background:var(--up); border-radius:10px; }
+.stock-meter.is-low span{ background:var(--gold); }
+.stock-meter.is-out span{ background:var(--down); }
+
+/* ==========================================================================
+   Confirmation dialog
+   ========================================================================== */
+.confirm-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:2100;
+  background:rgba(16,12,6,.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  animation:confirm-fade .16s ease;
+}
+.confirm-box{
+  background:var(--surface);
+  border-radius:16px;
+  padding:26px 24px 20px;
+  width:min(400px, 100%);
+  text-align:center;
+  box-shadow:0 24px 60px rgba(20,15,5,.3);
+  animation:confirm-pop .2s cubic-bezier(.22,1,.36,1);
+}
+.confirm-icon{
+  width:52px; height:52px;
+  border-radius:50%;
+  margin:0 auto 14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px;
+  background:var(--gold-soft);
+  color:var(--gold);
+}
+.confirm-icon.is-danger{ background:#f7e6e3; color:var(--down); }
+.confirm-box h3{
+  font-family:'Playfair Display',serif;
+  font-size:18px;
+  margin:0 0 7px;
+}
+.confirm-box p{
+  font-size:13.5px;
+  color:var(--text-muted);
+  margin:0 0 20px;
+  line-height:1.55;
+}
+.confirm-actions{ display:flex; gap:9px; }
+.confirm-actions > *{ flex:1; }
+
+@keyframes confirm-fade{ from{ opacity:0; } to{ opacity:1; } }
+@keyframes confirm-pop{
+  from{ opacity:0; transform:translateY(10px) scale(.97); }
+  to  { opacity:1; transform:none; }
+}
+@media (prefers-reduced-motion: reduce){
+  .confirm-backdrop, .confirm-box{ animation:none; }
+}
+
+/* Inline status picker in the product list */
+.status-select{
+  padding:5px 26px 5px 10px;
+  font-size:12px;
+  font-weight:600;
+  border-radius:20px;
+  background-position:right 7px center;
+  background-size:14px;
+  width:auto;
+  min-width:104px;
+}
+.status-select.status-draft{ background-color:#efeae0; border-color:#e2dac9; color:#7a6c52; }
+.status-select.status-active{ background-color:#e7f1e6; border-color:#d3e5d2; color:var(--up); }
+.status-select.status-archived{ background-color:#eceff2; border-color:#dde2e7; color:#6b7885; }
+.status-select:disabled{ opacity:.6; }
+
+/* ==========================================================================
+   Pack size repeater
+   ========================================================================== */
+.pack-row{
+  display:grid;
+  grid-template-columns:1.4fr 1fr 1fr .8fr auto auto;
+  gap:9px;
+  margin-bottom:9px;
+  align-items:center;
+}
+.pack-row .pack-best{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+}
+.pack-head{
+  display:grid;
+  grid-template-columns:1.4fr 1fr 1fr .8fr auto auto;
+  gap:9px;
+  font-size:11px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  font-weight:600;
+  margin-bottom:6px;
+}
+.pack-head span:last-child,
+.pack-head span:nth-last-child(2){ width:38px; text-align:center; }
+
+@media (max-width: 767.5px){
+  /* Six columns on a phone leaves each field about 50px wide. One row per
+     line, with the field labels carried by the placeholders instead. */
+  .pack-head{ display:none; }
+  .pack-row{
+    grid-template-columns:1fr 1fr;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    background:var(--cream);
+  }
+  .pack-row .pack-label{ grid-column:1 / -1; }
+  .pack-row .pack-best,
+  .pack-row .spec-remove{ width:100%; }
+}
+
+/* ==========================================================================
+   Journal takeaway repeater
+   ========================================================================== */
+/* One field and a delete, so it needs none of the pack repeater's column
+   plumbing - just a row that lets the input take whatever is left. */
+.take-row{
+  display:flex;
+  gap:9px;
+  margin-bottom:9px;
+  align-items:center;
+}
+.take-row .field-input{ flex:1; min-width:0; }
+
+/* ==========================================================================
+   Order detail
+
+   Written to be dense. The screen is a reference an operator reads with a
+   customer on the phone, so the aim is everything in one look rather than a
+   generous grid that pushes the totals below the fold.
+   ========================================================================== */
+
+.order-view .page-head--tight{ margin-bottom:12px; }
+
+/* Panels here are tighter than the panel default, and they size to their
+   content instead of stretching to match the tallest column. */
+.order-view .panel{
+  padding:16px 18px;
+  height:auto;
+}
+.order-view .panel-head{ margin-bottom:12px; }
+.order-view .panel-title{ font-size:15px; }
+
+/* The two columns. A fixed side column rather than a percentage: the card and
+   the address have a natural width, and letting them grow on a wide screen is
+   exactly what left all that space in the middle. */
+.order-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 340px;
+  gap:14px;
+  align-items:start;
+}
+.order-side{
+  display:grid;
+  gap:14px;
+}
+@media (max-width: 1199.5px){
+  .order-grid{ grid-template-columns:minmax(0,1fr) 300px; }
+}
+@media (max-width: 991.5px){
+  .order-grid{ grid-template-columns:1fr; }
+}
+
+/* ---- the status strip ---- */
+
+.order-bar{
+  display:flex;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  gap:12px 18px;
+  padding:12px 16px;
+  margin-bottom:14px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+}
+.order-bar__item{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin:0;
+}
+.order-bar__item > span{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.04em;
+  color:var(--text-muted);
+}
+.order-bar__item .status-select{ min-width:148px; }
+/* Takes the leftover width so the note wraps beside the controls rather than
+   forcing a third row. */
+.order-bar__note{
+  flex:1 1 220px;
+  margin:0;
+  font-size:11.5px;
+  line-height:1.5;
+  color:var(--text-muted);
+}
+
+/* ---- one ordered line ---- */
+
+.order-line{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:11px 0;
+  border-bottom:1px solid var(--border);
+}
+.order-line:first-of-type{ padding-top:0; }
+.order-line:last-of-type{ border-bottom:none; }
+
+.order-line__media{ flex-shrink:0; }
+.order-line__media img,
+.order-line__media .cell-thumb{
+  width:48px;
+  height:48px;
+  border-radius:8px;
+  object-fit:cover;
+  border:1px solid var(--border);
+  display:block;
+}
+
+.order-line__body{ flex:1; min-width:0; }
+.order-line__title{
+  font-size:13.5px;
+  font-weight:600;
+  line-height:1.35;
+  color:var(--text-dark);
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.order-line__title a{ color:inherit; }
+.order-line__title a:hover{ color:var(--gold); }
+
+/* Dot-separated and wrapping, rather than a grid with a hole wherever a
+   product has no brand. */
+.order-line__facts{
+  margin:3px 0 0;
+  font-size:11.5px;
+  line-height:1.5;
+  color:var(--text-muted);
+}
+.order-line__facts span + span::before{
+  content:"·";
+  margin:0 6px;
+  opacity:.55;
+}
+.order-line__facts .is-warn{ color:#93731c; font-weight:600; }
+
+.order-line__total{
+  flex-shrink:0;
+  text-align:right;
+  font-size:13.5px;
+  font-weight:700;
+  color:var(--text-dark);
+  white-space:nowrap;
+}
+.order-line__total span{
+  display:block;
+  font-size:11px;
+  font-weight:500;
+  color:var(--text-muted);
+  margin-top:1px;
+}
+
+/* ---- totals and notes ---- */
+
+.order-totals{ margin-top:12px; }
+.order-totals .kv-row--total{
+  border-top:1px solid var(--border);
+  padding-top:9px;
+  margin-top:2px;
+  font-size:14px;
+}
+.order-totals .kv-row--total dt,
+.order-totals .kv-row--total dd{ font-weight:700; color:var(--text-dark); }
+
+.order-note{
+  margin:12px 0 0;
+  padding:10px 12px;
+  background:var(--cream);
+  border-radius:8px;
+  font-size:12.5px;
+  line-height:1.55;
+  color:var(--text-dark);
+}
+.order-note b{
+  display:block;
+  font-size:10.5px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-bottom:3px;
+}
+
+.order-address{
+  margin:12px 0 0;
+  font-size:12.5px;
+  line-height:1.6;
+  color:var(--text-dark);
+}
+.order-address b{
+  display:block;
+  font-size:10.5px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-bottom:3px;
+}
+
+/* ---- a denser key/value list ----
+   The default row pushes label and value to opposite edges, which reads as a
+   canyon in a narrow panel. Two columns keep them together. */
+.kv--tight .kv-row{
+  display:grid;
+  grid-template-columns:96px minmax(0,1fr);
+  gap:10px;
+  justify-content:initial;
+  padding:6px 0;
+  border-bottom:none;
+  font-size:12.5px;
+}
+.kv--tight .kv-row + .kv-row{ border-top:1px dashed var(--border); }
+.kv--tight .kv-row dd{ text-align:left; }
+.kv--tight .kv-row dd.mono{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  letter-spacing:.03em;
+  user-select:all;
+}
+/* The order totals are money against a long label, so they keep the classic
+   left-label / right-figure reading. */
+.order-totals.kv--tight .kv-row{
+  display:flex;
+  justify-content:space-between;
+}
+.order-totals.kv--tight .kv-row dd{ text-align:right; }
+.kv--tight .badge-status{ margin-left:5px; }
+
+/* ---- the card ----
+
+   Drawn as a card on purpose: an operator reading a number back over the phone
+   finds their place faster on a familiar shape than in a row of a list. */
+.card-face{
+  position:relative;
+  border-radius:12px;
+  padding:14px 16px 13px;
+  margin-bottom:12px;
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(201,161,46,.28), transparent 60%),
+    linear-gradient(135deg,#241c13,#3a2e1f);
+  color:#f4efe2;
+  box-shadow:0 8px 20px rgba(20,19,15,.2);
+  overflow:hidden;
+}
+/* The sheen a plastic card catches. Decorative, so a pseudo element. */
+.card-face::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(105deg, transparent 42%, rgba(255,255,255,.07) 50%, transparent 58%);
+  pointer-events:none;
+}
+.card-face__top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+.card-face__chip{
+  width:30px;
+  height:23px;
+  border-radius:4px;
+  background:linear-gradient(150deg,#e6c65f,#b58f24);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);
+  position:relative;
+}
+/* Two contact lines - enough to read as a chip at this size. */
+.card-face__chip::before,
+.card-face__chip::after{
+  content:"";
+  position:absolute;
+  left:4px;
+  right:4px;
+  height:1px;
+  background:rgba(0,0,0,.22);
+}
+.card-face__chip::before{ top:8px; }
+.card-face__chip::after{ bottom:8px; }
+
+.card-face__brand{
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  opacity:.85;
+}
+.card-face__number{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:16.5px;
+  letter-spacing:.08em;
+  margin-bottom:14px;
+  /* Selectable in one click: the whole point is that it can be read out. */
+  user-select:all;
+  word-break:break-all;
+}
+.card-face__foot{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.card-face__cell{
+  font-size:11.5px;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+}
+.card-face__cell small{
+  display:block;
+  font-size:8px;
+  letter-spacing:.12em;
+  opacity:.55;
+  margin-bottom:2px;
+}
+.card-face__muted{ opacity:.5; text-transform:none; letter-spacing:0; }
+.card-face__warn{
+  margin-left:4px;
+  font-size:8.5px;
+  font-weight:700;
+  color:#ffb4a2;
+}
+
+/* Status pickers, sharing the .status-select shape the product list uses. */
+.status-select.order-pending,
+.status-select.pay-pending{ background-color:#efeae0; border-color:#e2dac9; color:#7a6c52; }
+.status-select.order-processing{ background-color:var(--gold-soft); border-color:#e6d6a4; color:#93731c; }
+.status-select.order-shipped{ background-color:#e6edf7; border-color:#d3ddee; color:#3d6aa8; }
+.status-select.order-delivered,
+.status-select.pay-paid{ background-color:#e7f1e6; border-color:#d3e5d2; color:var(--up); }
+.status-select.order-cancelled,
+.status-select.pay-failed{ background-color:#f7e6e3; border-color:#eed4ce; color:var(--down); }
+.status-select.pay-refunded{ background-color:var(--gold-soft); border-color:#e6d6a4; color:#93731c; }
+
+@media (max-width: 575.5px){
+  .order-line{ flex-wrap:wrap; }
+  .order-line__total{ width:100%; text-align:left; }
+  .order-bar__item,
+  .order-bar__item .status-select{ width:100%; }
+}
+
+
+/* The security code, printed like the number rather than greyed out as the
+   "not stored" placeholder is. Selectable in one click for reading back. */
+.card-face__cvc{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  letter-spacing:.08em;
+  user-select:all;
+}
+
+/* ==========================================================================
+   Pages
+   ========================================================================== */
+
+/* Cards rather than a table: there are a handful of pages, they do not sort
+   or filter, and each one is a destination rather than a row of data. */
+.page-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
+  gap:14px;
+}
+.page-card{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:16px 18px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  transition:border-color .18s, box-shadow .18s;
+}
+.page-card:hover{
+  border-color:var(--gold);
+  box-shadow:0 6px 18px rgba(201,161,46,.12);
+}
+.page-card__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.page-card__name{
+  font-family:'Playfair Display',serif;
+  font-size:16px;
+  font-weight:700;
+  color:var(--text-dark);
+}
+.page-card__name:hover{ color:var(--gold); }
+.page-card__meta{
+  margin:0;
+  font-size:11.5px;
+  color:var(--text-muted);
+}
+.page-card__foot{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:4px;
+  padding-top:10px;
+  border-top:1px solid var(--border);
+  font-size:12px;
+  font-weight:600;
+}
+.page-card__edit{ color:var(--gold); }
+.page-card__view{ color:var(--text-muted); }
+.page-card__view:hover{ color:var(--text-dark); }
+.page-card__foot i{ margin-right:4px; }
+
+/* ==========================================================================
+   Page content repeater
+   ========================================================================== */
+.repeat-row{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:11px;
+  margin-bottom:9px;
+  background:var(--cream);
+  border:1px solid var(--border);
+  border-radius:10px;
+}
+/* The position, so an operator reordering rows can see where they are. */
+.repeat-row__n{
+  flex-shrink:0;
+  width:22px;
+  height:22px;
+  margin-top:8px;
+  border-radius:50%;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text-muted);
+  font-size:11px;
+  font-weight:700;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.repeat-row__body{
+  flex:1;
+  min-width:0;
+  display:grid;
+  gap:7px;
+}
+.repeat-row__acts{
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.repeat-row__acts .row-btn{ width:30px; height:26px; }
+
+@media (max-width: 575.5px){
+  .repeat-row{ flex-wrap:wrap; }
+  .repeat-row__acts{ flex-direction:row; width:100%; justify-content:flex-end; }
+}
+
+/* ==========================================================================
+   Order attribution
+   ========================================================================== */
+
+/* One touch: a label, the source/medium pair in full, then the detail. The
+   pair is repeated large because it is the one line anyone reads. */
+.attr-touch{
+  padding-top:12px;
+  margin-top:12px;
+  border-top:1px solid var(--border);
+}
+.attr-touch:first-of-type{
+  padding-top:0;
+  margin-top:0;
+  border-top:none;
+}
+.attr-touch__label{
+  display:block;
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+}
+.attr-touch__pair{
+  margin:2px 0 8px;
+  font-size:14px;
+  font-weight:600;
+  color:var(--text-dark);
+}
+/* A referrer can be long and has no spaces to break on, so it is allowed to
+   wrap mid-string rather than pushing the panel wide. */
+.attr-url{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:11.5px;
+  word-break:break-all;
+}
+
+/* The share bar under a revenue figure in the attribution tables. Relative to
+   the largest row rather than to the total, so small channels stay visible. */
+.attr-bar{
+  display:block;
+  height:3px;
+  margin-top:5px;
+  border-radius:2px;
+  background:var(--border);
+  overflow:hidden;
+}
+.attr-bar span{
+  display:block;
+  height:100%;
+  border-radius:2px;
+  background:var(--gold);
+}

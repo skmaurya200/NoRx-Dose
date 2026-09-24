@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Laboratory glassware and a microscope on a bench">
+  <!--
+    Default landscape image: the lab bench.
+
+    Used wherever a wide picture is expected and none has been uploaded - the
+    research band on the home page, for one.
+  -->
+  <defs>
+    <linearGradient id="lab-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F7EFD8"/>
+      <stop offset="1" stop-color="#EFE8D6"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="600" fill="url(#lab-bg)"/>
+  <circle cx="620" cy="130" r="150" fill="#E8D9A8" opacity=".5"/>
+
+  <!-- bench -->
+  <rect x="0" y="470" width="800" height="130" fill="#E3DCC7"/>
+  <rect x="0" y="470" width="800" height="4" fill="#C9A227" opacity=".5"/>
+
+  <!-- microscope -->
+  <g transform="translate(96 214)" fill="none" stroke="#14130F" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M60 250h150"/>
+    <path d="M100 250v-34h70v34"/>
+    <path d="M135 216v-56"/>
+    <path d="M135 160h-38a70 70 0 0 1 0-96h20"/>
+    <path d="M117 40h48l-14 44h-48z"/>
+  </g>
+  <circle cx="231" cy="374" r="16" fill="#C9A227"/>
+
+  <!-- conical flask, filled -->
+  <g transform="translate(392 258)">
+    <path d="M52 0h34v66l58 110a20 20 0 0 1-18 30H12a20 20 0 0 1-18-30l58-110z"
+          fill="#FAF7F0" stroke="#14130F" stroke-width="10" stroke-linejoin="round"/>
+    <path d="M8 146h122l14 30a20 20 0 0 1-18 30H12a20 20 0 0 1-18-30z" fill="#C9A227" opacity=".55"/>
+    <line x1="46" y1="0" x2="92" y2="0" stroke="#14130F" stroke-width="12" stroke-linecap="round"/>
+  </g>
+
+  <!-- test tubes in a rack -->
+  <g transform="translate(600 300)">
+    <rect x="-14" y="128" width="150" height="20" rx="6" fill="#14130F" opacity=".85"/>
+    <g stroke="#14130F" stroke-width="8" fill="#FAF7F0" stroke-linejoin="round">
+      <path d="M8 6h30v112a15 15 0 0 1-30 0z"/>
+      <path d="M56 6h30v112a15 15 0 0 1-30 0z"/>
+      <path d="M104 6h30v112a15 15 0 0 1-30 0z"/>
+    </g>
+    <g fill="#C9A227" opacity=".6">
+      <path d="M10 82h26v36a13 13 0 0 1-26 0z"/>
+      <path d="M58 62h26v56a13 13 0 0 1-26 0z"/>
+      <path d="M106 94h26v24a13 13 0 0 1-26 0z"/>
+    </g>
+  </g>
+
+  <!-- capsules on the bench -->
+  <g opacity=".8">
+    <rect x="268" y="496" width="54" height="21" rx="10.5" fill="#C9A227" transform="rotate(-12 295 506)"/>
+    <rect x="336" y="512" width="54" height="21" rx="10.5" fill="#E3C766" transform="rotate(8 363 522)"/>
+  </g>
+</svg>

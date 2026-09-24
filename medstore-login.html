@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedixCare Pharmacy — Sign In</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+:root{
+  --teal-deep:#0e0a05;
+  --teal:#171009;
+  --teal-light:#e8c968;
+  --gold:#c9a12e;
+  --mint:#faf3df;
+  --cream:#fbf8f2;
+  --text-dark:#241c12;
+  --text-muted:#8a7d67;
+  --border:#ece4d2;
+  --danger:#b1503f;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  font-family:'Poppins',sans-serif;
+  color:var(--text-dark);
+  overflow-x:hidden;
+}
+:focus-visible{outline:2px solid var(--teal-light); outline-offset:2px;}
+
+.split-shell{
+  display:flex;
+  min-height:100vh;
+  height:100vh;
+  width:100%;
+}
+
+/* ---------------- LEFT PANEL ---------------- */
+.left-panel{
+  width:50vw;
+  height:100vh;
+  background:radial-gradient(120% 120% at 15% 10%, #241a08 0%, var(--teal-deep) 55%, #0b0805 100%);
+  color:#eafbf4;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:52px 60px;
+}
+.left-panel::before{
+  content:"";
+  position:absolute;
+  width:420px; height:420px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.08);
+  top:-140px; right:-140px;
+}
+.left-panel::after{
+  content:"";
+  position:absolute;
+  width:280px; height:280px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(201,161,46,.28), transparent 70%);
+  bottom:-80px; left:-60px;
+}
+.lp-brand{display:flex; align-items:center; gap:12px; position:relative; z-index:2;}
+.lp-brand .mark{
+  width:44px; height:44px; border-radius:13px;
+  background:rgba(255,255,255,.12);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; color:#fff;
+  border:1px solid rgba(255,255,255,.18);
+}
+.lp-brand .name{font-weight:700; font-size:19px; letter-spacing:.01em;}
+.lp-brand .name span{color:var(--teal-light);}
+
+.lp-body{position:relative; z-index:2; max-width:440px;}
+.lp-body h1{
+  font-size:clamp(26px,3vw,36px);
+  font-weight:700;
+  line-height:1.25;
+  margin-bottom:16px;
+}
+.lp-body p{
+  color:#d9cfba;
+  font-size:14.5px;
+  line-height:1.7;
+  margin-bottom:32px;
+}
+.feature-list{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:16px;}
+.feature-list li{display:flex; align-items:flex-start; gap:14px;}
+.feature-list .f-icon{
+  width:34px; height:34px; border-radius:10px; flex-shrink:0;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--teal-light); font-size:15px;
+}
+.feature-list .f-text b{display:block; font-size:14px; font-weight:600; color:#fff;}
+.feature-list .f-text span{font-size:12.5px; color:#a8987a;}
+
+.lp-foot{
+  position:relative; z-index:2;
+  display:flex; align-items:center; gap:22px;
+  border-top:1px solid rgba(255,255,255,.14);
+  padding-top:20px;
+  font-size:12px; color:#a8987a;
+}
+.lp-foot span{display:flex; align-items:center; gap:7px;}
+.lp-foot i{color:var(--teal-light);}
+
+/* ---------------- RIGHT PANEL ---------------- */
+.right-panel{
+  width:50vw;
+  height:100vh;
+  background:var(--cream);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow-y:auto;
+  padding:40px;
+}
+.form-wrap{width:100%; max-width:380px;}
+.mobile-brand{display:none; align-items:center; gap:10px; margin-bottom:34px;}
+.mobile-brand .mark{
+  width:38px; height:38px; border-radius:11px; background:var(--teal);
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:17px;
+}
+.mobile-brand .name{font-weight:700; font-size:17px; color:var(--text-dark);}
+.mobile-brand .name span{color:var(--teal);}
+
+.form-wrap h2{font-size:24px; font-weight:700; margin-bottom:6px;}
+.form-wrap .sub{color:var(--text-muted); font-size:13.5px; margin-bottom:30px;}
+
+.field-label{font-size:13px; font-weight:500; margin-bottom:7px; display:block;}
+.field-wrap{position:relative; margin-bottom:18px;}
+.field-wrap i.field-icon{
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  color:var(--text-muted); font-size:15px;
+}
+.field-wrap input{
+  width:100%;
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:12px;
+  padding:12px 14px 12px 40px;
+  font-size:14px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.field-wrap input:focus{
+  outline:none;
+  border-color:var(--teal-light);
+  box-shadow:0 0 0 3px rgba(201,161,46,.18);
+}
+.toggle-eye{
+  position:absolute; right:14px; top:50%; transform:translateY(-50%);
+  border:none; background:none; color:var(--text-muted); font-size:15px; cursor:pointer;
+}
+
+.row-between{display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; font-size:13px;}
+.remember{display:flex; align-items:center; gap:8px; color:var(--text-muted);}
+.remember input{accent-color:var(--teal); width:15px; height:15px;}
+.forgot-link{color:var(--teal); font-weight:500;}
+.forgot-link:hover{color:var(--teal-deep);}
+
+.btn-teal{
+  width:100%;
+  background:linear-gradient(160deg,var(--teal-light),var(--teal));
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  padding:13px;
+  font-weight:600;
+  font-size:14.5px;
+  transition:filter .15s;
+}
+.btn-teal:hover{filter:brightness(1.06); color:#fff;}
+
+.divider{
+  display:flex; align-items:center; gap:14px;
+  color:var(--text-muted); font-size:12px;
+  margin:26px 0;
+}
+.divider::before, .divider::after{content:""; flex:1; height:1px; background:var(--border);}
+
+.btn-social{
+  width:100%;
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:12px;
+  padding:11px;
+  font-size:13.5px;
+  font-weight:500;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  color:var(--text-dark);
+}
+.btn-social:hover{background:#f5f5f2;}
+
+.signup-line{text-align:center; margin-top:28px; font-size:13.5px; color:var(--text-muted);}
+.signup-line a{color:var(--teal); font-weight:600;}
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width: 991.5px){
+  .left-panel{display:none;}
+  .right-panel{width:100vw;}
+  .mobile-brand{display:flex;}
+}
+@media (max-width: 420px){
+  .right-panel{padding:28px 20px;}
+  .form-wrap h2{font-size:21px;}
+}
+</style>
+</head>
+<body>
+
+<div class="split-shell">
+
+  <!-- LEFT: brand / content -->
+  <div class="left-panel">
+    <div class="lp-brand">
+      <div class="mark"><i class="bi bi-capsule"></i></div>
+      <div class="name">Medix<span>Care</span> Pharmacy</div>
+    </div>
+
+    <div class="lp-body">
+      <h1>Your health, delivered with care.</h1>
+      <p>Sign in to manage prescriptions, track orders, and reorder your medicines in a few taps — trusted by patients and pharmacists alike.</p>
+
+      <ul class="feature-list">
+        <li>
+          <span class="f-icon"><i class="bi bi-patch-check"></i></span>
+          <span class="f-text"><b>100% genuine medicines</b><span>Sourced directly from licensed manufacturers</span></span>
+        </li>
+        <li>
+          <span class="f-icon"><i class="bi bi-truck"></i></span>
+          <span class="f-text"><b>Fast home delivery</b><span>Same-day dispatch in most serviceable pin codes</span></span>
+        </li>
+        <li>
+          <span class="f-icon"><i class="bi bi-headset"></i></span>
+          <span class="f-text"><b>24/7 pharmacist support</b><span>Talk to a certified pharmacist anytime</span></span>
+        </li>
+        <li>
+          <span class="f-icon"><i class="bi bi-shield-lock"></i></span>
+          <span class="f-text"><b>Private &amp; secure</b><span>Your prescriptions and records stay confidential</span></span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="lp-foot">
+      <span><i class="bi bi-award"></i> Licensed pharmacy</span>
+      <span><i class="bi bi-people"></i> 50,000+ patients served</span>
+    </div>
+  </div>
+
+  <!-- RIGHT: login form -->
+  <div class="right-panel">
+    <div class="form-wrap">
+
+      <div class="mobile-brand">
+        <div class="mark"><i class="bi bi-capsule"></i></div>
+        <div class="name">Medix<span>Care</span> Pharmacy</div>
+      </div>
+
+      <h2>Welcome back</h2>
+      <p class="sub">Sign in to your account to continue</p>
+
+      <form onsubmit="return false;">
+        <label class="field-label" for="email">Email or phone number</label>
+        <div class="field-wrap">
+          <i class="bi bi-envelope field-icon"></i>
+          <input type="text" id="email" placeholder="you@example.com" required>
+        </div>
+
+        <label class="field-label" for="password">Password</label>
+        <div class="field-wrap">
+          <i class="bi bi-lock field-icon"></i>
+          <input type="password" id="password" placeholder="Enter your password" required>
+          <button type="button" class="toggle-eye" id="toggleEye"><i class="bi bi-eye"></i></button>
+        </div>
+
+        <div class="row-between">
+          <label class="remember">
+            <input type="checkbox"> Remember me
+          </label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-teal">Sign in</button>
+
+        <div class="divider">or continue with</div>
+
+        <button type="button" class="btn-social">
+          <i class="bi bi-google"></i> Continue with Google
+        </button>
+
+        <div class="signup-line">
+          New to MedixCare? <a href="#">Create an account</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const toggleEye = document.getElementById('toggleEye');
+  const passwordInput = document.getElementById('password');
+  toggleEye.addEventListener('click', () => {
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+    toggleEye.innerHTML = isPassword ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+  });
+</script>
+</body>
+</html>
